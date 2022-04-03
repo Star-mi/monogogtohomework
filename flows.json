@@ -1,0 +1,301 @@
+[
+    {
+        "id": "a30c1ecba45342ee",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "32de099e45bfe05b",
+        "type": "comment",
+        "z": "a30c1ecba45342ee",
+        "name": "WARNING: please check you have started this container with a volume that is mounted to /data\\n otherwise any flow changes are lost when you redeploy or upgrade the container\\n (e.g. upgrade to a more recent node-red docker image).\\n  If you are using named volumes you can ignore this warning.\\n Double click or see info side panel to learn how to start Node-RED in Docker to save your work",
+        "info": "\nTo start docker with a bind mount volume (-v option), for example:\n\n```\ndocker run -it -p 1880:1880 -v /home/user/node_red_data:/data --name mynodered nodered/node-red\n```\n\nwhere `/home/user/node_red_data` is a directory on your host machine where you want to store your flows.\n\nIf you do not do this then you can experiment and redploy flows, but if you restart or upgrade the container the flows will be disconnected and lost. \n\nThey will still exist in a hidden data volume, which can be recovered using standard docker techniques, but that is much more complex than just starting with a named volume as described above.",
+        "x": 350,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "3ed1a3360efb69a7",
+        "type": "http in",
+        "z": "a30c1ecba45342ee",
+        "name": "",
+        "url": "/monogototest/:passkey",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 220,
+        "y": 500,
+        "wires": [
+            [
+                "ea79c8724a262335"
+            ]
+        ]
+    },
+    {
+        "id": "ea79c8724a262335",
+        "type": "http request",
+        "z": "a30c1ecba45342ee",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://api2.binance.com/api/v3/ticker/24hr",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 490,
+        "y": 500,
+        "wires": [
+            [
+                "0d6f6c4a041756bc"
+            ]
+        ]
+    },
+    {
+        "id": "1ca0e26ee1f4240e",
+        "type": "inject",
+        "z": "a30c1ecba45342ee",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 200,
+        "y": 540,
+        "wires": [
+            [
+                "ea79c8724a262335"
+            ]
+        ]
+    },
+    {
+        "id": "9356b5c76e6867ba",
+        "type": "debug",
+        "z": "a30c1ecba45342ee",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1170,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "0d6f6c4a041756bc",
+        "type": "function",
+        "z": "a30c1ecba45342ee",
+        "name": "",
+        "func": "msg.payload = msg.payload.filter(el=> el.priceChange>0)\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 720,
+        "y": 500,
+        "wires": [
+            [
+                "18d8479ae299dbbc"
+            ]
+        ]
+    },
+    {
+        "id": "18d8479ae299dbbc",
+        "type": "function",
+        "z": "a30c1ecba45342ee",
+        "name": "Passkey filter",
+        "func": "msg.payload = msg.payload.filter(el=> el.symbol===msg.req.params.passkey)\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 910,
+        "y": 500,
+        "wires": [
+            [
+                "65d90053d7f5e97e",
+                "31a0a1fe59ec9b7e"
+            ]
+        ]
+    },
+    {
+        "id": "65d90053d7f5e97e",
+        "type": "http response",
+        "z": "a30c1ecba45342ee",
+        "name": "",
+        "statusCode": "",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "x": 1150,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "13992ea41392960e",
+        "type": "http in",
+        "z": "a30c1ecba45342ee",
+        "name": "",
+        "url": "/monogototest",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 190,
+        "y": 640,
+        "wires": [
+            [
+                "dfabdc9aeb734f5c"
+            ]
+        ]
+    },
+    {
+        "id": "aa6424a788e81f0f",
+        "type": "http response",
+        "z": "a30c1ecba45342ee",
+        "name": "",
+        "statusCode": "",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "x": 1150,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "dfabdc9aeb734f5c",
+        "type": "http request",
+        "z": "a30c1ecba45342ee",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://api2.binance.com/api/v3/ticker/24hr",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 490,
+        "y": 640,
+        "wires": [
+            [
+                "bb710ea627827b7a"
+            ]
+        ]
+    },
+    {
+        "id": "bb710ea627827b7a",
+        "type": "function",
+        "z": "a30c1ecba45342ee",
+        "name": "Price change > 0",
+        "func": "msg.payload = msg.payload.filter(el=> el.priceChange>0)\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 690,
+        "y": 640,
+        "wires": [
+            [
+                "3eebfab18dffaecd"
+            ]
+        ]
+    },
+    {
+        "id": "3eebfab18dffaecd",
+        "type": "change",
+        "z": "a30c1ecba45342ee",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "msg.payload.symbol",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 930,
+        "y": 640,
+        "wires": [
+            [
+                "aa6424a788e81f0f",
+                "9356b5c76e6867ba"
+            ]
+        ]
+    },
+    {
+        "id": "078108aca00119eb",
+        "type": "inject",
+        "z": "a30c1ecba45342ee",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 200,
+        "y": 700,
+        "wires": [
+            [
+                "dfabdc9aeb734f5c"
+            ]
+        ]
+    },
+    {
+        "id": "31a0a1fe59ec9b7e",
+        "type": "debug",
+        "z": "a30c1ecba45342ee",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1170,
+        "y": 560,
+        "wires": []
+    }
+]
